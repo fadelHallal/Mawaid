@@ -164,7 +164,9 @@ button{cursor:pointer}
 
 /* pro */
 .pro-top{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-block:22px 6px}
-.pro-top h1{font-size:28px}
+.pro-top h1{font-size:26px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shophead{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.shophead .sw{width:44px;height:44px;border-radius:12px}
 .pro-top select{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-weight:600}
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-block:12px}
 .toolbar .label{font-family:var(--f-display);font-weight:700;font-size:19px;min-width:0}
@@ -327,8 +329,8 @@ details.wa-more summary{cursor:pointer;font-size:13.5px;font-weight:600;color:va
   .bar .btn.sm,.userbtn{flex:none}
   input,select,textarea,.field input,.field select,.search input,.search select{font-size:16px!important}
   .pro-top{gap:8px;padding-block:12px 0}
-  .pro-top h1{display:none}
-  .pro-top select{flex:1 1 140px;min-width:0;padding:7px 12px}
+  .pro-top h1{font-size:20px}
+  .shophead .sw{width:34px;height:34px}
   .pro-top .sp{display:none}
   .pro-top .btn{padding:7px 12px;font-size:13px}
   .toolbar{gap:8px;padding-block:10px}
@@ -703,8 +705,7 @@ function renderPro(){
   const net=rev-chT;
   return `<main class="wrap">
     <div class="pro-top">
-      <h1>${W?t('my_schedule'):t('pro_title')}</h1>
-      <select id="proBiz" aria-label="${t('col_biz')}">${D().biz.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>
+      <div class="shophead"><span class="sw" style="${swatch(b.hue)}"></span><div style="min-width:0"><h1>${esc(b.name)}</h1><div class="hint">${W?t('my_schedule'):t('pro_title')} · ${esc(cityName(b.city))}</div></div></div>
       <span class="sp" style="flex:1"></span>
       ${W?'':`<button class="btn topadd" data-a="newCharge">+ ${t('new_charge')}</button>`}
       <button class="btn primary topadd" data-a="newAppt">+ ${t('new_appt')}</button>
