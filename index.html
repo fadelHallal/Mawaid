@@ -565,7 +565,7 @@ function renderBar(){
     ${S.view==='client'?(S.user?`<button class="userbtn" data-a="account"><span class="av st0">${esc(S.user.name[0]||'?')}</span>${esc(S.user.name.split(' ')[0])}</button>`:`<button class="btn sm" data-a="signin">${t('signin')}</button>`):''}
     <div class="barmenu ${S.menu?'open':''}"><span class="mlabel">${t('m_view')}</span>
     <div class="seg" role="group" aria-label="View">
-      ${['client','pro','staff','admin'].map(x=>`<button data-a="view" data-v="${x}" aria-pressed="${v===x}">${t('v_'+x)}</button>`).join('')}
+      ${['client','pro','staff'].concat(S.view==='admin'?['admin']:[]).map(x=>`<button data-a="view" data-v="${x}" aria-pressed="${v===x}">${t('v_'+x)}</button>`).join('')}
     </div>
     <div class="seg" role="group" aria-label="Language">
       <button data-a="lang" data-v="en" aria-pressed="${S.lang==='en'}">EN</button><button data-a="lang" data-v="fr" aria-pressed="${S.lang==='fr'}">FR</button><button data-a="lang" data-v="ar" aria-pressed="${S.lang==='ar'}" lang="ar">عربي</button>
