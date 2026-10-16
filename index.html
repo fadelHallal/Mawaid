@@ -344,6 +344,18 @@ details.wa-more summary{cursor:pointer;font-size:13.5px;font-weight:600;color:va
   .admin-head h1{font-size:24px}
   .admin-head p{font-size:13.5px}
 }
+.fabwrap,.fabscrim{display:none}
+@media (max-width:640px){
+  .topadd{display:none}
+  .fabwrap{display:flex;flex-direction:column;align-items:flex-end;gap:10px;position:fixed;inset-inline-end:max(18px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:18}
+  [dir="rtl"] .fabwrap{align-items:flex-start}
+  .fabscrim{display:block;position:fixed;inset:0;z-index:17;background:var(--scrim);opacity:.5}
+  .fab{width:58px;height:58px;border-radius:50%;border:0;background:var(--fg);color:var(--bg);display:grid;place-items:center;box-shadow:0 6px 20px rgb(0 0 0 / .25);transition:transform .15s}
+  .fab.on{transform:rotate(45deg)}
+  .fabmenu{display:flex;flex-direction:column;gap:8px;align-items:inherit}
+  .fabmenu .btn{box-shadow:var(--shadow);padding:11px 18px;font-size:14.5px}
+  .prolayout{padding-bottom:96px}
+}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;z-index:60;box-shadow:var(--shadow);max-width:calc(100% - 32px);text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -694,8 +706,8 @@ function renderPro(){
       <h1>${W?t('my_schedule'):t('pro_title')}</h1>
       <select id="proBiz" aria-label="${t('col_biz')}">${D().biz.map(x=>`<option value="${x.id}" ${x.id===b.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>
       <span class="sp" style="flex:1"></span>
-      ${W?'':`<button class="btn" data-a="newCharge">+ ${t('new_charge')}</button>`}
-      <button class="btn primary" data-a="newAppt">+ ${t('new_appt')}</button>
+      ${W?'':`<button class="btn topadd" data-a="newCharge">+ ${t('new_charge')}</button>`}
+      <button class="btn primary topadd" data-a="newAppt">+ ${t('new_appt')}</button>
     </div>
     <div class="toolbar">
       <div class="seg">${['day','week','month'].map(m=>`<button data-a="proMode" data-v="${m}" aria-pressed="${S.proMode===m}">${t(m)}</button>`).join('')}</div>
@@ -723,7 +735,10 @@ function renderPro(){
         </div>`}
       </aside>
     </div>
-  </main>`;
+  </main>
+  ${S.fab?'<div class="fabscrim" data-a="fab"></div>':''}
+  <div class="fabwrap">${S.fab?`<div class="fabmenu"><button class="btn" data-a="newCharge">${t('new_charge')}</button><button class="btn primary" data-a="newAppt">${t('new_appt')}</button></div>`:''}
+  <button class="fab ${S.fab?'on':''}" data-a="${W?'newAppt':'fab'}" aria-label="${t('add_appt_t')}" aria-expanded="${!!S.fab}"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>`;
 }
 function renderGrid(b,p){
   const H=S.proMode==='day'?64:60;
@@ -979,8 +994,9 @@ function act(a,v,el){
     case 'gotoDay':S.proMode='day';S.proDate=v;break;
     case 'appt':S.modal={type:'appt',id:v};renderModal();return;
     case 'setStatus':{const x=D().appts.find(z=>z.id===S.modal.id);x.status=v;persist();if(v==='cancelled')S.modal=null;toast(t('saved'));break}
-    case 'newAppt':S.modal='newAppt';renderModal();return;
-    case 'newCharge':S.modal='newCharge';renderModal();return;
+    case 'newAppt':S.modal='newAppt';if(S.fab){S.fab=false;render();return}renderModal();return;
+    case 'newCharge':S.modal='newCharge';if(S.fab){S.fab=false;render();return}renderModal();return;
+    case 'fab':S.fab=!S.fab;break;
     case 'delCharge':S.data.charges=D().charges.filter(c=>c.id!==v);persist();break;
     case 'openPro':S.view='pro';S.proBiz=v;S.proStaff=null;S.proMode='day';S.proDate=todayStr;setHash('pro');scrollTo(0,0);break;
     case 'toggleBiz':{const b=bizById(v);b.active=!b.active;persist();break}
