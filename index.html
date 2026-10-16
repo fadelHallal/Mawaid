@@ -358,6 +358,11 @@ details.wa-more summary{cursor:pointer;font-size:13.5px;font-weight:600;color:va
   .fabmenu .btn{box-shadow:var(--shadow);padding:11px 18px;font-size:14.5px}
   .prolayout{padding-bottom:96px}
 }
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.actions .btn{justify-content:center;padding:12px 16px;font-size:15px;min-height:46px}
+.btn.dangerfill{background:var(--bad);border-color:var(--bad);color:var(--bg)}
+.btn.wide{width:100%;justify-content:center;min-height:44px}
+@media (max-width:640px){.actions.stack{grid-template-columns:1fr}.actions .first-m{order:-1}}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;z-index:60;box-shadow:var(--shadow);max-width:calc(100% - 32px);text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -884,7 +889,7 @@ function authModal(){const a=S.auth;const backBtn=`<button class="link" data-a="
 function accountModal(){const u=S.user;const n=D().appts.filter(a=>a.userId===u.id||S.mine.includes(a.id)).length;
   return[t('account'),`<div style="display:flex;gap:12px;align-items:center"><span class="av st0" style="width:52px;height:52px;font-size:20px">${esc(u.name[0])}</span><div><b style="font-size:17px">${esc(u.name)}</b><div class="hint">${t('via')} ${provName(u.provider)}</div></div></div>
     <dl class="kv">${u.email?`<dt>${t('email')}</dt><dd>${esc(u.email)}</dd>`:''}<dt>${t('phone')}</dt><dd class="num">${esc(u.phone)}</dd><dt>${t('mine')}</dt><dd class="num">${n}</dd></dl>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-a="mine">${t('mine')}</button><button class="btn danger" data-a="signout">${t('signout')}</button></div>`]}
+    <div class="actions"><button class="btn primary" data-a="mine">${t('mine')}</button><button class="btn danger" data-a="signout">${t('signout')}</button></div>`]}
 function signedIn(u){u.id=u.email||u.phone;S.user=u;persist();toast(t('welcome').replace('{name}',u.name.split(' ')[0]));
   if(S.authReturn==='book'&&S.bk){S.bk.name=u.name;S.bk.phone=u.phone;S.modal='book'}else S.modal=null;S.authReturn=null;render()}
 
@@ -921,24 +926,24 @@ function bookModal(){
       <label class="field">${t('name')}<input id="bk-name" name="name" required autocomplete="name" value="${esc(k.name)}"></label>
       <label class="field">${t('phone')}<input id="bk-phone" name="phone" required type="tel" autocomplete="tel" placeholder="+961 …" value="${esc(k.phone)}"></label>
       <button class="btn accent" type="submit" style="justify-content:center;padding:12px">${t('confirm')}</button></form>`+back];
-  return[t('booked_t'),`<div style="display:grid;justify-items:center;gap:8px;text-align:center"><div class="ok">✓</div><h2 style="font-size:22px">${t('booked_t')}</h2><p class="muted" style="margin:0">${t('booked_s')}</p></div>`+sum+(k.apptId?waBubble(D().appts.find(x=>x.id===k.apptId),'confirm'):'')+`<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn" data-a="mine">${t('mine')}</button><button class="btn primary" data-a="close">${t('done')}</button></div>`];
+  return[t('booked_t'),`<div style="display:grid;justify-items:center;gap:8px;text-align:center"><div class="ok">✓</div><h2 style="font-size:22px">${t('booked_t')}</h2><p class="muted" style="margin:0">${t('booked_s')}</p></div>`+sum+(k.apptId?waBubble(D().appts.find(x=>x.id===k.apptId),'confirm'):'')+`<div class="actions"><button class="btn" data-a="mine">${t('mine')}</button><button class="btn primary" data-a="close">${t('done')}</button></div>`];
 }
 function confirmModal(){const m=S.modal;const a=D().appts.find(x=>x.id===m.id);const b=bizById(a.bizId);const s=svc(b,a.serviceId);
   return[t('cc_title'),`<div class="summary"><b>${m.who==='client'?esc(b.name):esc(a.client)}</b><span>${esc(sName(s))} · ${t('with')} ${esc(b.staff[a.staff])}</span><span class="num">${cap(fmt(a.date,{weekday:'long',day:'numeric',month:'long'}))} · ${hm(a.start)}</span></div>
     <p class="muted" style="margin:0">${t(m.who==='client'?'cc_note_client':'cc_note_pro')}</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="btn" data-a="ccKeep">${t('cc_keep')}</button><button class="btn" data-a="ccYes" style="background:var(--bad);border-color:var(--bad);color:#fff">${t('cc_yes')}</button></div>`]}
+    <div class="actions stack"><button class="btn" data-a="ccKeep">${t('cc_keep')}</button><button class="btn dangerfill first-m" data-a="ccYes">${t('cc_yes')}</button></div>`]}
 function apptModal(id){
   const a=D().appts.find(x=>x.id===id);const b=bizById(a.bizId);const s=svc(b,a.serviceId);
   return[t('appt_t'),`<div style="display:flex;gap:12px;align-items:center"><span class="av st${a.staff%4}" style="width:46px;height:46px;font-size:18px">${esc(a.client[0])}</span><div style="flex:1;min-width:0"><b style="font-size:17px">${esc(a.client)}</b><div class="muted num">${esc(a.phone)}</div></div><span class="pill ${a.status}">${t('st_'+a.status)}</span></div>
     <dl class="kv"><dt>${t('service')}</dt><dd>${esc(sName(s))}</dd><dt>${t('staff')}</dt><dd>${esc(b.staff[a.staff])}</dd><dt>${t('date')}</dt><dd>${cap(fmt(a.date,{weekday:'long',day:'numeric',month:'long'}))}</dd><dt>${t('time')}</dt><dd class="num">${hm(a.start)} – ${hm(a.start+a.dur)}</dd><dt>${t('price').replace(' ($)','')}</dt><dd class="num"><b>${money(a.price)}</b></dd><dt></dt><dd class="muted">${t(a.source==='online'?'source_online':'source_manual')}</dd></dl>
     <div class="tag">WhatsApp</div>${waLog(a)}
     <details class="wa-more"><summary>${t('wa_show')}</summary><div style="margin-top:10px">${waBubble(a,'confirm')}</div></details>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div class="actions">
       ${a.status!=='done'?`<button class="btn accent" data-a="setStatus" data-v="done">${t('mark_done')}</button>`:''}
       ${a.status!=='noshow'?`<button class="btn" data-a="setStatus" data-v="noshow">${t('mark_noshow')}</button>`:''}
       ${a.status!=='booked'?`<button class="btn" data-a="setStatus" data-v="booked">${t('st_booked')}</button>`:''}
-      <button class="btn danger" data-a="setStatus" data-v="cancelled">${t('cancel_appt')}</button>
-    </div>`];
+    </div>
+    ${a.status!=='cancelled'?`<button class="btn ghost danger wide" data-a="setStatus" data-v="cancelled">${t('cancel_appt')}</button>`:''}`];
 }
 function newApptModal(){
   const b=bizById(S.proBiz);const ds=S.proDate<todayStr?todayStr:S.proDate;
